@@ -1,0 +1,73 @@
+---
+# tasks file for ubuntuelasticsearch
+
+- name: Adding Elastic Search GPG KEY
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch 
+    state: present
+
+- name: Creating new repo file 
+  file:
+    path: /etc/apt/sources.list.d/elastic-7.x.list
+    state: touch
+
+- name: Appending repo to file
+  lineinfile:
+    path: /etc/apt/sources.list.d/elastic-7.x.list
+    line: "deb https://artifacts.elastic.co/packages/7.x/apt stable main"
+    state: present
+
+- name: Installing Elastic Search on Ubuntu
+  import_role:
+    name: installubuntupkg
+  vars:
+    package: elasticsearch
+
+- name: Uncomment network.host on Ubuntu
+  replace:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^#network.host.*'
+    replace: 'network.host: localhost'
+
+- name: Uncomment http.port on Ubuntu
+  replace:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^#http.port.*'
+    replace: 'http.port: 9200'
+
+- name: Check discovery.type on Ubuntu
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "#discovery.type"
+    state: present
+  check_mode: yes
+  register: discovery
+
+- name: Uncomment discovery.type on Ubuntu
+  replace:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^#discovery.type.*'
+    replace: 'discovery.type: single-node'
+  when: discovery.changed
+
+- name: Adding discovery.type on Ubuntu
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "discovery.type: single-node"
+    state: present
+  when: not discovery.failed
+
+- name: Setting JVM Memory for Elastic Search on Ubuntu
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "-Xms512m"
+    - "-Xmx512m"
+
+- name: Start and Enable Elastic Search on Ubuntu
+  service:
+    name: elasticsearch
+    state: started
+    enabled: yes

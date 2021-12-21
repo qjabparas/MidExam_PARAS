@@ -1,0 +1,8 @@
+---
+# tasks file for centoslogstash
+
+- name: Start and Enable logstash on CentOS
+  service:
+    name: logstash
+    state: started
+    enabled: yes

@@ -1,0 +1,38 @@
+---
+# tasks file for centoskibana
+
+- name: Uncomment server.port on CentOS
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#server.port.*'
+    replace: 'server.port: 5601'
+
+- name: Uncomment server.host on CentOS
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#server.host.*'
+    replace: 'server.host "localhost"'
+
+- name: Uncomment elasticsearch.hosts on CentOS
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#elasticsearch.hosts.*'
+    replace: 'elasticsearch.hosts: ["http://localhost:9200"]'
+
+- name: Start and Enable Kibana
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+
+- name: Allow traffic on port 5601
+  firewalld:
+    port: 5601/tcp
+    permanent: yes
+    state: enabled
+
+- name: Reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+    enabled: yes

@@ -1,0 +1,32 @@
+---
+# tasks file for ubuntuinfluxdb
+
+- name: InfluxDB Apt Key on Ubuntu
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Make files on Ubuntu
+  file:
+    path: "/etc/apt/sources.list.d/influxdb.list"
+    owner: "isaacsapelino-tip"
+    group: "isaacsapelino-tip"
+    mode: 0755
+    state: touch
+
+- name: Adding line to file on Ubuntu
+  lineinfile:
+    path: "/etc/apt/sources.list.d/influxdb.list"
+    line: "deb https://repos.influxdata.com/ubuntu bionic stable"
+
+- name: Installing InfluxDB on Ubuntu
+  apt:
+    name: influxdb
+    state: latest
+    update_cache: yes
+
+- name: Start and enable influxdb on Ubuntu
+  service:
+    name: influxdb
+    state: started
+    enabled: yes

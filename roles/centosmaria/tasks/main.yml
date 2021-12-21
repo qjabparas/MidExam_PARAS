@@ -1,0 +1,8 @@
+---
+# tasks file for centosmaria
+
+- name: Start MariaDB
+  service:
+    name: mariadb
+    state: started
+    enabled: yes

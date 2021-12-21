@@ -1,0 +1,385 @@
+---
+- name: Midterm Exam 
+  hosts: elasticsearch
+  tags: elasticsearch,ubuntu,centos
+  tasks:
+    - name: Include variables
+      include_vars:
+        file: config.yaml
+
+    - name: Install Elasticsearch dependency on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: openjdk-8-jdk
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install Nginx on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: nginx
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stopping Apache2 on Ubuntu
+      service:
+        name: apache2
+        state: stopped
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install apt-transport-https
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: apt-transport-https
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Configure Elasticsearch on Ubuntu
+      include_role:
+        name: ubuntuelasticsearch
+      when: ansible_facts['distribution'] == 'Ubuntu'
+      
+- name: Midterms
+  hosts: elasticsearch
+  tags: elasticsearch,centos
+  tasks:
+    - name: Include variables
+      include_vars:
+        file: config.yaml
+
+    - name: Install Java [Elastic search dependency] on CentOS
+      include_role:
+        name: installcentospkg
+      vars:
+        package: java-1.8.0-openjdk
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Configuring Elastic Search on CentOS
+      include_role:
+        name: centoselasticsearch
+      when: ansible_facts['distribution'] == 'CentOS'
+
+- name: Install and Configure Kibana
+  hosts: kibana
+  tags: kibana,ubuntu
+  tasks:
+    - name: Include vars
+      include_vars:
+        file: config.yaml
+
+    - name: Install Kibana on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: kibana
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Configure Kibana on Ubuntu
+      include_role:
+        name: ubuntukibana
+      when: ansible_facts['distribution'] == 'Ubuntu'
+      
+- name: Install and Configure Kibana
+  hosts: kibana
+  tags: kibana,centos
+  tasks:
+    - name: Include vars
+      include_vars:
+        file: config.yaml
+
+    - name: Install Kibana on CentOS
+      include_role:
+        name: installcentospkg
+      vars:
+        package: kibana
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Configure Kibana on CentOS
+      include_role:
+        name: centoskibana
+      when: ansible_facts['distribution'] == 'CentOS'
+
+
+- name: Install and Configure Logstash
+  hosts: logstash
+  tags: logstash,ubuntu
+  tasks:
+    - name: Include vars
+      include_vars:
+        file: config.yaml
+
+    - name: Install Logstash on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: logstash
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Configure Logstash on Ubuntu
+      include_role:
+        name: ubuntulogstash
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Install and Configure Logstash
+  hosts: logstash
+  tags: logstash,centos
+  tasks:
+    - name: Include vars
+      include_vars:
+        file: config.yaml
+
+    - name: Install logstash on CentOS
+      include_role:
+        name: installcentospkg
+      vars:
+        package: logstash
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Configure logstash on CentOS
+      include_role:
+        name: centoslogstash
+      when: ansible_facts['distribution'] == 'CentOS'
+
+- name: Install and Configure Nagios in Ubuntu Host
+  hosts: nagios
+  tags: nagios,ubuntu
+  tasks:
+    - name: Include global variable
+      include_vars:
+        file: config.yaml
+    
+    - name: Stop Nginx
+      service:
+        name: nginx
+        state: stopped
+        enabled: no
+
+    - name: Install Nagios dependencies on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package:
+          - autoconf
+          - gcc
+          - libc6
+          - make
+          - wget
+          - libssl-dev
+          - gawk
+          - dc
+          - build-essential
+          - snmp
+          - libnet-snmp-perl
+          - gettext
+          - unzip
+          - apache2
+          - php
+          - libapache2-mod-php7.4
+          - libgd-dev
+          - python3
+          - python3-pip
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install nagios and configure on Ubuntu
+      include_role:
+        name: ubuntunagios
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stopping UFW on Ubuntu
+      include_role:
+        name: stopufw
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Install and Configure Grafana
+  tags: grafana,ubuntu,centos
+  hosts: grafana
+  tasks:
+    - name: Include global variables
+      include_vars:
+        file: config.yaml
+
+    - name: Disabling Apache2
+      service:
+        name: apache2
+        state: stopped
+
+    - name: Enabling Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Install and configure Grafana on Ubuntu
+      include_role:
+        name: ubuntugrafana
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install and configure Grafana on CentOS
+      include_role:
+        name: centosgrafana
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Stopping UFW on Ubuntu
+      include_role:
+        name: stopufw
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stopping Firewalld on CentOS
+      include_role:
+        name: stopfirewalld
+      when: ansible_facts['distribution'] == 'CentOS'
+
+- name: Install and Configure InfluxDB
+  tags: influxdb,ubuntu,centos
+  hosts: influxdb
+  tasks:
+    - name: Include global variables
+      include_vars:
+        file: config.yaml
+
+    - name: Install and Configure InfluxDB on Ubuntu
+      include_role:
+        name: ubuntuinfluxdb
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install and Configure InfluxDB on CentOS
+      include_role:
+        name: centosinfluxdb
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Stopping UFW
+      include_role:
+        name: stopufw
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stopping Firewalld
+      include_role:
+        name: stopfirewalld
+      when: ansible_facts['distribution'] == 'CentOS'
+
+- name: Install and Configure Prometheus
+  tags: prom,ubuntu,centos
+  hosts: prom
+  tasks:
+    - name: Include global variables
+      include_vars:
+        file: config.yaml
+
+    - name: Disabling Apache2
+      service:
+        name: apache2
+        state: stopped
+        enabled: no
+
+    - name: Enabling Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Install and Configure Prometheus on Ubuntu
+      include_role:
+        name: ubuntuprometheus
+      vars:
+        src: "{{ prometheus_src }}"
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install and Configure Prometheus on CentOS
+      include_role:
+        name: centosprometheus
+      vars:
+        src: "{{ prometheus_src }}"
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stop UFW on Ubuntu
+      include_role:
+        name: stopufw
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stop Firewalld on CentOS
+      include_role:
+        name: stopfirewalld
+      when: ansible_facts['distribution'] == 'CentOS'
+
+
+- name: Install and Configure Apache2 and HTTPD
+  hosts: webserver
+  tags: httpd,apache2,ubuntu,centos
+  tasks:
+    - name: Include config.yaml variables
+      include_vars:
+        file: config.yaml
+
+    - name: Install Apache on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package:
+          - apache2
+          - php
+          - libapache2-mod-php
+          - php-mysql
+
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install HTTPD in CentOS
+      include_role:
+        name: installcentospkg
+      vars:
+        package:
+          - httpd
+          - php
+          - php-mysqlnd
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Configure Apache2 on Ubuntu
+      include_role:
+        name: ubuntuapache
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Configure HTTPD on CentOS
+      include_role:
+        name: centoshttpd
+      when: ansible_facts['distribution'] == 'CentOS'
+
+- name: Install and Configure MariaDB
+  hosts: mariadb
+  tags: mariadb,ubuntu,centos
+  tasks:
+    - name: Include global variables
+      include_vars:
+        file: config.yaml
+
+    - name: Install Mariadb on Ubuntu
+      include_role:
+        name: installubuntupkg
+      vars:
+        package: mariadb-server
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install Mariadb on CentOS
+      include_role:
+        name: installcentospkg
+      vars:
+        package: mariadb-server
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Stop UFW on Ubuntu
+      include_role:
+        name: stopufw
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Stop Firewalld on CentOS
+      include_role:
+        name: stopfirewalld
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: Configure MariaDB on Ubuntu
+      include_role:
+        name: ubuntumaria
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Configure MariaDB on CentOS
+      include_role:
+        name: centosmaria
+      when: ansible_facts['distribution'] == 'CentOS'

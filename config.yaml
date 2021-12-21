@@ -1,0 +1,29 @@
+# GLOBAL VARIABLES
+remote_user: qjabparas
+
+# Elastic Search Repo
+elastic_repo: elasticsearch.repo
+
+# influxdb repo
+influxdb_repo: influxdb.repo
+
+# grafana repo
+grafana_repo: grafana.repo
+
+# Logstash conf
+logstash_conf: logstash.conf
+
+# Prometheus
+prometheus_src: prometheus.service
+
+# Nagios User and Pass
+nagios_user: qjabparas
+nagios_pass: nagiosenable
+
+# LAMP Variables
+domain: qjabparas
+owner: qjabparas
+group: qjabparas
+index_html: index.html
+ubuntu_src: qjabparas-ubuntu.conf
+centos_src: qjabparas-centos.conf

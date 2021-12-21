@@ -1,0 +1,26 @@
+---
+# tasks file for centosgrafana
+
+- name: Adding Grafana to Repo
+  copy:
+    src: "{{ grafana_repo }}"
+    dest: "/etc/yum.repos.d/{{ grafana_repo }}"
+    owner: "{{ remote_user }}"
+    group: "{{ remote_user }}"
+    mode: 0755
+
+- name: Make cache on CentOS
+  shell: "dnf makecache"
+  register: dnf_cache
+
+- name: Install and update grafana on CentOS
+  dnf:
+    name: grafana
+    state: latest
+    update_cache: yes
+
+- name: Start and enable Grafana on CentOS
+  service:
+    name: grafana-server
+    state: started
+    enabled: yes

@@ -1,0 +1,23 @@
+---
+# tasks file for ubuntugrafana
+
+- name: Adding apt key Grafana on Ubuntu
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Add repo grafana to Apt on Ubuntu
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+
+- name: Installing Grafana on Ubuntu
+  apt:
+    name: grafana
+    state: latest
+    update_cache: yes
+
+- name: Start and Enable Grafana on Ubuntu
+  service:
+    name: grafana-server
+    state: started

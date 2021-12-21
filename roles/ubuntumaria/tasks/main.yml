@@ -1,0 +1,8 @@
+---
+# tasks file for ubuntumaria
+
+- name: Start mariadb
+  service:
+    name: mariadb
+    state: started
+    enabled: yes

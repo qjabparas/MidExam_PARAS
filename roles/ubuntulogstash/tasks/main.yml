@@ -1,0 +1,8 @@
+---
+# tasks file for ubuntulogstash
+
+- name: Start and Enable Logstash on Ubuntu
+  service:
+    name: logstash
+    state: started
+    enabled: yes
